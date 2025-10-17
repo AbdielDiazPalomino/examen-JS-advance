@@ -1,23 +1,26 @@
-<div class="container mt-5" style="max-width: 400px;">
-  <h2>Registro</h2>
+<div class="auth-wrap">
+  <div class="auth-card register-card">
+    <h2>Registro</h2>
+    <p>Crea tu cuenta y únete a nuestra comunidad.</p>
 
-  <div class="form-group mt-3">
-    <label>Usuario</label>
-    <input type="text" class="form-control" [(ngModel)]="username" />
+    <div class="form-group mt-3">
+      <label>Usuario</label>
+      <input type="text" class="form-control" [(ngModel)]="username" />
+    </div>
+
+    <div class="form-group mt-3">
+      <label>Email</label>
+      <input type="email" class="form-control" [(ngModel)]="email" />
+    </div>
+
+    <div class="form-group mt-3">
+      <label>Contraseña</label>
+      <input type="password" class="form-control" [(ngModel)]="password" />
+    </div>
+
+    <button class="btn btn-success mt-4 w-100" (click)="register()">Registrarse</button>
+
+    <p class="text-success mt-3">{{ successMessage }}</p>
+    <p class="text-danger mt-3">{{ errorMessage }}</p>
   </div>
-
-  <div class="form-group mt-3">
-    <label>Email</label>
-    <input type="email" class="form-control" [(ngModel)]="email" />
-  </div>
-
-  <div class="form-group mt-3">
-    <label>Contraseña</label>
-    <input type="password" class="form-control" [(ngModel)]="password" />
-  </div>
-
-  <button class="btn btn-success mt-4 w-100" (click)="register()">Registrarse</button>
-
-  <p class="text-success mt-3">{{ successMessage }}</p>
-  <p class="text-danger mt-3">{{ errorMessage }}</p>
 </div>
