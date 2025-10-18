@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { SafeUrlPipe } from '../../pipes/safe-url.pipe';
 
 interface Producto {
@@ -8,12 +9,14 @@ interface Producto {
   nombre: string;
   precio: number;
   stock: number;
+  seleccionado?: boolean;
+  cantidad?: number;
 }
 
 @Component({
   selector: 'app-boleta',
   standalone: true,
-  imports: [CommonModule, SafeUrlPipe],
+  imports: [CommonModule, FormsModule, SafeUrlPipe],
   templateUrl: './boleta.html',
   styleUrls: ['./boleta.css']
 })
@@ -23,12 +26,13 @@ export class BoletaComponent implements OnInit {
   pdfUrl: string | null = null;
   boletaGenerada = false;
   productos: Producto[] = [];
+  total = 0;
 
   private productosUrl = 'http://127.0.0.1:8000/api/productos/';
   private ventasUrl = 'http://127.0.0.1:8000/api/ventas/';
   private clientesUrl = 'http://127.0.0.1:8000/api/clientes/';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngOnInit() {
     this.cargarProductos();
@@ -37,7 +41,11 @@ export class BoletaComponent implements OnInit {
   cargarProductos() {
     this.http.get<Producto[]>(this.productosUrl).subscribe({
       next: (productos) => {
-        this.productos = productos;
+        this.productos = productos.map(p => ({
+          ...p,
+          seleccionado: false,
+          cantidad: 1
+        }));
       },
       error: (err) => {
         console.error('Error al cargar productos:', err);
@@ -46,9 +54,17 @@ export class BoletaComponent implements OnInit {
     });
   }
 
+  actualizarTotal() {
+    this.total = this.productos
+      .filter(p => p.seleccionado)
+      .reduce((sum, p) => sum + p.precio * (p.cantidad || 1), 0);
+  }
+
   generarBoleta() {
-    if (this.productos.length === 0) {
-      this.error = 'No hay productos para generar la boleta';
+    const seleccionados = this.productos.filter(p => p.seleccionado && p.cantidad && p.cantidad > 0);
+
+    if (seleccionados.length === 0) {
+      this.error = 'Selecciona al menos un producto.';
       return;
     }
 
@@ -56,7 +72,6 @@ export class BoletaComponent implements OnInit {
     this.error = '';
     this.pdfUrl = null;
 
-    // Paso 1: Crear o obtener un cliente genérico
     const clienteData = {
       nombre: 'Cliente General',
       dni: '00000000',
@@ -65,21 +80,16 @@ export class BoletaComponent implements OnInit {
       email: ''
     };
 
-    // Primero intentamos obtener el cliente, si no existe lo creamos
+    // Buscar o crear cliente
     this.http.get<any[]>(`${this.clientesUrl}?dni=00000000`).subscribe({
       next: (clientes) => {
-        let clienteId: number;
-        
-        if (clientes && clientes.length > 0) {
-          // Cliente ya existe
-          clienteId = clientes[0].id;
-          this.crearVentaConCliente(clienteId);
+        const clienteId = clientes.length > 0 ? clientes[0].id : null;
+
+        if (clienteId) {
+          this.crearVentaConCliente(clienteId, seleccionados);
         } else {
-          // Crear nuevo cliente
           this.http.post<any>(this.clientesUrl, clienteData).subscribe({
-            next: (cliente) => {
-              this.crearVentaConCliente(cliente.id);
-            },
+            next: (cliente) => this.crearVentaConCliente(cliente.id, seleccionados),
             error: (err) => {
               console.error('❌ Error al crear cliente:', err);
               this.error = 'No se pudo crear el cliente.';
@@ -88,12 +98,9 @@ export class BoletaComponent implements OnInit {
           });
         }
       },
-      error: (err) => {
-        // Si falla el GET, intentamos crear el cliente directamente
+      error: () => {
         this.http.post<any>(this.clientesUrl, clienteData).subscribe({
-          next: (cliente) => {
-            this.crearVentaConCliente(cliente.id);
-          },
+          next: (cliente) => this.crearVentaConCliente(cliente.id, seleccionados),
           error: (err) => {
             console.error('❌ Error al crear cliente:', err);
             this.error = 'No se pudo crear el cliente.';
@@ -104,35 +111,47 @@ export class BoletaComponent implements OnInit {
     });
   }
 
-  private crearVentaConCliente(clienteId: number) {
-    // Calcular el total correctamente como número
-    const total = this.productos.reduce((sum, p) => sum + Number(p.precio), 0);
+  private crearVentaConCliente(clienteId: number, seleccionados: Producto[]) {
+    const total = seleccionados.reduce((sum, p) => sum + p.precio * (p.cantidad || 1), 0);
 
-    // Paso 2: Crear la venta con los detalles
     const ventaData = {
       cliente: clienteId,
       total: Number(total.toFixed(2)),
-      detalles: this.productos.map(p => ({
+      detalles: seleccionados.map(p => ({
         producto: p.id,
-        cantidad: 1,
-        precio_unitario: Number(p.precio),
-        subtotal: Number(p.precio)
+        cantidad: p.cantidad,
+        precio_unitario: p.precio,
+        subtotal: Number((p.precio * (p.cantidad || 1)).toFixed(2))
       }))
     };
 
-    console.log('Datos de venta a enviar:', ventaData); // Para debug
-
     this.http.post<any>(this.ventasUrl, ventaData).subscribe({
       next: (venta) => {
-        // Paso 3: Usar el ID de la venta creada para generar la boleta
         const boletaUrl = `${this.ventasUrl}${venta.id}/boleta/`;
-        
         this.http.get(boletaUrl, { responseType: 'blob' }).subscribe({
           next: (response: Blob) => {
             const blob = new Blob([response], { type: 'application/pdf' });
-            this.pdfUrl = URL.createObjectURL(blob);
-            this.loading = false;
+            const blobUrl = URL.createObjectURL(blob);
+
+            // ✅ Descargar automáticamente el PDF
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = `boleta_${venta.id}.pdf`;
+            a.click();
+
+            this.pdfUrl = blobUrl;
             this.boletaGenerada = true;
+            this.loading = false;
+
+            // ✅ Liberar memoria después de un tiempo
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+
+
+            // 🔹 Actualizar stock de los productos vendidos
+            seleccionados.forEach(p => {
+              const nuevoStock = Math.max(p.stock - (p.cantidad || 0), 0);
+              this.http.patch(`${this.productosUrl}${p.id}/`, { stock: nuevoStock }).subscribe();
+            });
           },
           error: (err) => {
             console.error('❌ Error al generar boleta PDF:', err);
@@ -143,12 +162,7 @@ export class BoletaComponent implements OnInit {
       },
       error: (err) => {
         console.error('❌ Error al crear venta:', err);
-        if (err.error) {
-          console.error('Detalles del error:', err.error);
-          this.error = `Error al crear venta: ${JSON.stringify(err.error)}`;
-        } else {
-          this.error = 'No se pudo crear la venta. Verifica tu backend.';
-        }
+        this.error = err.error ? JSON.stringify(err.error) : 'Error al crear venta.';
         this.loading = false;
       }
     });
@@ -158,6 +172,7 @@ export class BoletaComponent implements OnInit {
     this.pdfUrl = null;
     this.boletaGenerada = false;
     this.error = '';
+    this.total = 0;
     this.cargarProductos();
   }
 }

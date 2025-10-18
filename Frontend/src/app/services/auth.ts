@@ -17,9 +17,14 @@ export class AuthService {
   }
 
   // 🧾 REGISTER
-  register(username: string, password: string, email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}register/`, { username, password, email });
-  }
+  register(username: string, email: string, password: string) {
+  return this.http.post('http://localhost:8000/api/auth/register/', {
+    username,
+    email,
+    password
+  });
+}
+
 
   // 🪣 GUARDAR TOKEN
   saveToken(token: string): void {
