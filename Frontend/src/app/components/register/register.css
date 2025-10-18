@@ -1,13 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
 :root {
-  --brand: #4338ca;
-  --brand-light: #6366f1;
+  --brand: #6366f1;
+  --brand-dark: #312e81;
+  --brand-light: #818cf8;
   --accent: #00e0ff;
   --accent-glow: rgba(0, 224, 255, 0.35);
-  --muted: #94a3b8;
-  --card-bg: rgba(255, 255, 255, 0.85);
-  --border: rgba(255, 255, 255, 0.25);
+  --success: #10b981;
+  --success-dark: #047857;
+  --muted: #cbd5e1;
+  --card-bg: rgba(20, 24, 40, 0.116);
+  --border: rgba(255, 255, 255, 0.08);
+  --shadow-lg: 0 25px 60px rgba(0, 0, 0, 0.6);
+  --text: #f1f5f9;
 }
-
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 20, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: -1;
+}
 @keyframes gradientShift {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -21,6 +34,17 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(25px); }
   to { opacity: 1; transform: translateY(0); }
+}
+body {
+  font-family: 'Poppins', sans-serif;
+  color: var(--text);
+  background: url('https://i.redd.it/lk37iqdieyt91.png') center center fixed;
+  background-size: fill;
+  backdrop-filter: blur(8px) brightness(0.45);
+  -webkit-backdrop-filter: blur(8px) brightness(0.45);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
 .auth-wrap {
@@ -56,32 +80,23 @@
 
 .auth-card {
   position: relative;
-  z-index: 1;
   width: 100%;
   max-width: 440px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
   border-radius: 22px;
   padding: 3rem 2.5rem;
+  background: rgba(255, 255, 255, 0.85);
   box-shadow: 0 20px 50px rgba(0,0,0,0.15), inset 0 0 25px rgba(255,255,255,0.05);
-  backdrop-filter: blur(20px) saturate(140%);
   animation: fadeIn 0.9s ease both;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 .auth-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 25px 60px rgba(91, 75, 255, 0.35);
+  box-shadow: 0 25px 60px rgba(7, 0, 85, 0.35);
 }
 
 .auth-card::before {
   content: '';
   position: absolute;
-  inset: -2px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, var(--brand-light), var(--accent));
-  opacity: 0.2;
-  z-index: -1;
-  filter: blur(10px);
 }
 
 .auth-card h2 {
@@ -99,11 +114,10 @@
 }
 .auth-card p {
   text-align: center;
-  color: var(--muted);
+  color: rgb(10, 10, 10);
   margin-bottom: 2rem;
   animation: fadeIn 1.4s ease both;
 }
-
 .form-control {
   width: 100%;
   padding: 0.85rem 1rem;

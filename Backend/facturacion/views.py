@@ -2,9 +2,11 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponse
+import requests
 
 from .models import Cliente, Producto, Venta, DetalleVenta
 from .serializers import (
@@ -48,6 +50,30 @@ class ClienteRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cliente.objects.all()
     serializer_class = ClienteSerializer
     permission_classes = [IsAuthenticated]
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def consultar_dni(request):
+    dni = request.GET.get('numero')
+    if not dni:
+        return Response({'error': 'DNI es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+
+    url = 'https://api.decolecta.com/v1/reniec/dni'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer sk_11032.jH1WyieRstSSReDo3sIsNQskY7DUCjse'
+    }
+    
+    try:
+        response = requests.get(url, params={'numero': dni}, headers=headers)
+        response.raise_for_status()
+        return Response(response.json())
+    except requests.RequestException as e:
+        return Response(
+            {'error': f'Error consultando RENIEC: {str(e)}'}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 # ==============================

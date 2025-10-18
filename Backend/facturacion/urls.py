@@ -18,6 +18,9 @@ urlpatterns = [
     path('productos/<int:pk>/', views.ProductoRetrieveUpdateDestroyView.as_view(), name='productos_detail'),
 
     # Ventas
+    
+    # RENIEC
+    path('consultar-dni/', views.consultar_dni, name='consultar_dni'),
     path('ventas/', views.VentaListCreateView.as_view(), name='ventas_list_create'),
     path('ventas/<int:pk>/', views.VentaRetrieveView.as_view(), name='venta_detail'),
     path('ventas/<int:pk>/boleta/', views.VentaPDFView.as_view(), name='venta_pdf'),

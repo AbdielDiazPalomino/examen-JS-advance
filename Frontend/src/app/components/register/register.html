@@ -1,7 +1,23 @@
+<body>
 <div class="auth-wrap">
   <div class="auth-card register-card">
     <h2>Registro</h2>
     <p>Crea tu cuenta y únete a nuestra comunidad.</p>
+
+    <div class="form-group mt-3">
+      <label>DNI</label>
+      <div class="input-group">
+        <input type="text" class="form-control" [(ngModel)]="dni" maxlength="8" placeholder="Ingresa tu DNI" />
+        <button class="btn btn-outline-primary" (click)="consultarDNI()" [disabled]="isLoading">
+          {{ isLoading ? 'Consultando...' : 'Consultar' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="form-group mt-3" *ngIf="fullName">
+      <label>Nombre Completo</label>
+      <input type="text" class="form-control" [value]="fullName" disabled />
+    </div>
 
     <div class="form-group mt-3">
       <label>Usuario</label>
@@ -18,9 +34,10 @@
       <input type="password" class="form-control" [(ngModel)]="password" />
     </div>
 
-    <button class="btn btn-success mt-4 w-100" (click)="register()">Registrarse</button>
+    <button class="btn btn-success mt-4 w-100" (click)="register()" [disabled]="isLoading">Registrarse</button>
 
     <p class="text-success mt-3">{{ successMessage }}</p>
     <p class="text-danger mt-3">{{ errorMessage }}</p>
   </div>
 </div>
+</body>

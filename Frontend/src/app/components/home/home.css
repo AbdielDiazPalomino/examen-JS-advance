@@ -1,11 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
 :root {
-  --home-brand: #2563eb;
-  --home-brand-dark: #1e3a8a;
-  --home-brand-light: #60a5fa;
+  --brand: #6366f1;
+  --brand-dark: #312e81;
+  --brand-light: #818cf8;
   --accent: #00e0ff;
-  --muted: #94a3b8;
-  --bg: #f3f4f6;
-  --shadow-lg: 0 20px 60px rgba(37, 99, 235, 0.25);
+  --accent-glow: rgba(0, 224, 255, 0.35);
+  --success: #10b981;
+  --success-dark: #047857;
+  --muted: #cbd5e1;
+  --card-bg: rgba(20, 24, 40, 0.8);
+  --border: rgba(255, 255, 255, 0.08);
+  --shadow-lg: 0 25px 60px rgba(0, 0, 0, 0.6);
+  --text: #f1f5f9;
 }
 
 @keyframes gradientShift {
@@ -25,10 +31,25 @@
   50% { box-shadow: 0 0 20px rgba(0, 224, 255, 0.5), 0 0 40px rgba(0, 224, 255, 0.25); }
   100% { box-shadow: 0 0 10px rgba(0, 224, 255, 0.3), 0 0 20px rgba(0, 224, 255, 0.1); }
 }
-
-/* ============================================
-   HOME HERO SECTION
-   ============================================ */
+body {
+  font-family: 'Poppins', sans-serif;
+  color: var(--text);
+  background: url('https://i.redd.it/lk37iqdieyt91.png') center center fixed;
+  background-size: fill;
+  backdrop-filter: blur(8px) brightness(0.45);
+  -webkit-backdrop-filter: blur(8px) brightness(0.45);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 20, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: -1;
+}
 .home-hero {
   min-height: 100vh;
   display: flex;
