@@ -15,13 +15,14 @@ export class LoginComponent {
   username = '';
   password = '';
   errorMessage = '';
+  successMessage = '';
 
   constructor(private authService: AuthService) {}
 
   login() {
     this.authService.login(this.username, this.password).subscribe({
       next: (res: any) => {
-        alert('Inicio de sesión exitoso ✅');
+        this.successMessage = 'Inicio de sesión exitoso ✅';
         localStorage.setItem('token', res.token);
       },
       error: (err) => {
