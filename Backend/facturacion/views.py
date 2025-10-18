@@ -7,6 +7,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponse
 import requests
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 
 from .models import Cliente, Producto, Venta, DetalleVenta
 from .serializers import (
@@ -34,6 +37,23 @@ class UserView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+    
+# ==============================
+# 🔑 LOGIN PERSONALIZADO (JWT)
+# ==============================
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        # Agregar datos personalizados al token si quieres
+        token['username'] = user.username
+        return token
+
+
+class LoginView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
 
 
 # ==============================

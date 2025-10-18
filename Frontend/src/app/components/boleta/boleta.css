@@ -1,0 +1,46 @@
+.boleta-container {
+  max-width: 700px;
+  margin: 50px auto;
+  padding: 25px;
+  text-align: center;
+  background: #1e1e2f;
+  color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #00ffc3;
+}
+
+.btn-generar, .btn-descargar {
+  background-color: #00ffc3;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #1e1e2f;
+  font-weight: bold;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.btn-generar:hover, .btn-descargar:hover {
+  background-color: #00cfa1;
+  transform: scale(1.05);
+}
+
+.error {
+  margin-top: 15px;
+  color: #ff5555;
+}
+
+.resultado {
+  margin-top: 25px;
+}
+
+iframe {
+  margin-top: 15px;
+  border: 2px solid #00ffc3;
+  border-radius: 8px;
+}

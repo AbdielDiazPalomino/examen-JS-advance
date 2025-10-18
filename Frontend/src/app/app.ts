@@ -1,28 +1,27 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { provideRouter } from '@angular/router';
+import { Component, signal, importProvidersFrom } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { importProvidersFrom } from '@angular/core';
+import { RouterOutlet, provideRouter } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
-import { routes } from './app.routes'; // aquí importas tus rutas
+import { routes } from './app.routes';
+import { AuthInterceptor } from './interceptors/auth-interceptor';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, FormsModule],
   templateUrl: './app.html',
-  styleUrls: ['./app.css'],
+  styleUrls: ['./app.css']
 })
 export class App {
   protected readonly title = signal('Frontend');
 }
 
-// 🔥 Bootstrap de la aplicación (reemplaza al app.module.ts)
 bootstrapApplication(App, {
   providers: [
     provideRouter(routes),
-    importProvidersFrom(FormsModule, HttpClientModule),
-  ],
+    importProvidersFrom(FormsModule),
+    provideHttpClient(withInterceptors([AuthInterceptor])) // ✅ aquí sí funciona
+  ]
 }).catch((err) => console.error(err));

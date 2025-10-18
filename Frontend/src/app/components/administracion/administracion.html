@@ -1,0 +1,33 @@
+<div class="admin-wrap">
+  <h2>Administración de Productos</h2>
+
+  <div class="form-section">
+    <h4>Agregar Producto</h4>
+    <input type="text" placeholder="Nombre" [(ngModel)]="nuevoProducto.nombre">
+    <input type="number" placeholder="Precio" [(ngModel)]="nuevoProducto.precio">
+    <input type="number" placeholder="Stock" [(ngModel)]="nuevoProducto.stock">
+    <button (click)="agregarProducto()">Agregar</button>
+  </div>
+
+  <div class="list-section">
+    <h4>Lista de Productos</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of productos">
+          <td>{{ p.nombre }}</td>
+          <td>S/. {{ p.precio }}</td>
+          <td>{{ p.stock }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button class="boletear-btn" (click)="irABoletear()">🧾 Boletear</button>
+</div>
