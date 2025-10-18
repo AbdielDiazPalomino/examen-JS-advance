@@ -1,14 +1,16 @@
 <div class="admin-wrap">
   <h2>Administración de Productos</h2>
-
+  
   <div class="form-section">
-    <h4>Agregar Producto</h4>
+    <h4>{{ editandoProducto ? 'Editar Producto' : 'Agregar Producto' }}</h4>
     <input type="text" placeholder="Nombre" [(ngModel)]="nuevoProducto.nombre">
     <input type="number" placeholder="Precio" [(ngModel)]="nuevoProducto.precio">
     <input type="number" placeholder="Stock" [(ngModel)]="nuevoProducto.stock">
-    <button (click)="agregarProducto()">Agregar</button>
+    <button *ngIf="!editandoProducto" (click)="agregarProducto()">Agregar</button>
+    <button *ngIf="editandoProducto" class="btn-update" (click)="actualizarProducto()">Actualizar</button>
+    <button *ngIf="editandoProducto" class="btn-cancel" (click)="cancelarEdicion()">Cancelar</button>
   </div>
-
+  
   <div class="list-section">
     <h4>Lista de Productos</h4>
     <table>
@@ -17,6 +19,7 @@
           <th>Nombre</th>
           <th>Precio</th>
           <th>Stock</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -24,10 +27,18 @@
           <td>{{ p.nombre }}</td>
           <td>S/. {{ p.precio }}</td>
           <td>{{ p.stock }}</td>
+          <td class="actions">
+            <button class="btn-edit" (click)="editarProducto(p)" title="Editar">
+              ✏️
+            </button>
+            <button class="btn-delete" (click)="eliminarProducto(p.id)" title="Eliminar">
+              🗑️
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
-
+  
   <button class="boletear-btn" (click)="irABoletear()">🧾 Boletear</button>
 </div>

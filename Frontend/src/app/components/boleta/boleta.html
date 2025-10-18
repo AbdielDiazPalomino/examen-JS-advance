@@ -1,18 +1,53 @@
-<!-- src/app/pages/boleta/boleta.html -->
 <div class="boleta-container">
   <h1>Generar Boleta</h1>
+  
+  <div class="productos-section" *ngIf="!boletaGenerada">
+    <h3>Productos Registrados</h3>
+    <div class="productos-lista" *ngIf="productos.length > 0">
+      <table class="tabla-productos">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let producto of productos">
+            <td>{{ producto.nombre }}</td>
+            <td>S/. {{ producto.precio }}</td>
+            <td>{{ producto.stock }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <p class="info-text" *ngIf="productos.length === 0">
+      No hay productos registrados. Ve a Administración para agregar productos.
+    </p>
 
-  <button (click)="generarBoleta()" [disabled]="loading" class="btn-generar">
-    {{ loading ? 'Generando...' : 'Generar Boleta PDF' }}
-  </button>
+    <button 
+      (click)="generarBoleta()" 
+      [disabled]="loading || productos.length === 0" 
+      class="btn-generar">
+      {{ loading ? 'Generando...' : 'Generar Boleta PDF' }}
+    </button>
+  </div>
 
   <div *ngIf="error" class="error">{{ error }}</div>
 
-  <div *ngIf="pdfUrl" class="resultado">
-    <p>✅ Boleta generada correctamente.</p>
-    <a [href]="pdfUrl" download="boleta.pdf" target="_blank" class="btn-descargar">
-      Descargar Boleta PDF
-    </a>
-    <iframe [src]="pdfUrl | safeUrl" width="100%" height="500px"></iframe>
+  <div *ngIf="boletaGenerada && pdfUrl" class="resultado">
+    <h3>✅ Boleta generada correctamente</h3>
+    <div class="botones-resultado">
+      <a [href]="pdfUrl" download="boleta.pdf" target="_blank" class="btn-descargar">
+        📥 Descargar Boleta PDF
+      </a>
+      <button (click)="nuevaBoleta()" class="btn-nueva">
+        ➕ Nueva Boleta
+      </button>
+    </div>
+    <div class="pdf-preview">
+      <iframe [src]="pdfUrl | safeUrl" width="100%" height="600px"></iframe>
+    </div>
   </div>
 </div>
