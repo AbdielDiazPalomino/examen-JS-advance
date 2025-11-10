@@ -1,53 +1,92 @@
-<div class="boleta-container">
-  <h1>Generar Boleta</h1>
-  
-  <div class="productos-section" *ngIf="!boletaGenerada">
-    <h3>Productos Registrados</h3>
+<div class="boleta-container" *ngIf="!boletaGenerada">
+  <h3>Datos del Cliente</h3>
+
+  <form #clienteForm="ngForm" class="cliente-form">
+    <label>
+      Nombre:
+      <input type="text" [(ngModel)]="cliente.nombre" name="nombre" required />
+    </label>
+
+    
+
+    <label>
+      Dirección:
+      <input type="text" [(ngModel)]="cliente.direccion" name="direccion" />
+    </label>
+
+    <label>
+      Teléfono:
+      <input type="text" [(ngModel)]="cliente.telefono" name="telefono" />
+    </label>
+
+    <label>
+      Email:
+      <input type="email" [(ngModel)]="cliente.email" name="email" />
+    </label>
+  </form>
+
+  <hr />
+
+  <!-- tu sección de productos -->
+  <div class="productos-section">
+    <h3>Selecciona Productos</h3>
+
     <div class="productos-lista" *ngIf="productos.length > 0">
       <table class="tabla-productos">
         <thead>
           <tr>
+            <th>Seleccionar</th>
             <th>Producto</th>
-            <th>Precio</th>
+            <th>Precio (S/.)</th>
             <th>Stock</th>
+            <th>Cantidad</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let producto of productos">
+            <td><input type="checkbox" [(ngModel)]="producto.seleccionado" (change)="actualizarTotal()" /></td>
             <td>{{ producto.nombre }}</td>
-            <td>S/. {{ producto.precio }}</td>
+            <td>{{ producto.precio }}</td>
             <td>{{ producto.stock }}</td>
+            <td>
+              <input
+                type="number"
+                min="1"
+                [max]="producto.stock"
+                [(ngModel)]="producto.cantidad"
+                [disabled]="!producto.seleccionado"
+                (input)="actualizarTotal()"
+                style="width: 70px;"
+              />
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
-    
+
     <p class="info-text" *ngIf="productos.length === 0">
       No hay productos registrados. Ve a Administración para agregar productos.
     </p>
 
-    <button 
-      (click)="generarBoleta()" 
-      [disabled]="loading || productos.length === 0" 
-      class="btn-generar">
+    <div class="resumen">
+      <p><strong>Total: </strong>S/. {{ total | number:'1.2-2' }}</p>
+    </div>
+
+    <button
+      (click)="generarBoleta()"
+      [disabled]="loading || total <= 0 || !cliente.nombre"
+      class="btn-generar"
+    >
       {{ loading ? 'Generando...' : 'Generar Boleta PDF' }}
     </button>
   </div>
+</div>
 
-  <div *ngIf="error" class="error">{{ error }}</div>
-
-  <div *ngIf="boletaGenerada && pdfUrl" class="resultado">
-    <h3>✅ Boleta generada correctamente</h3>
-    <div class="botones-resultado">
-      <a [href]="pdfUrl" download="boleta.pdf" target="_blank" class="btn-descargar">
-        📥 Descargar Boleta PDF
-      </a>
-      <button (click)="nuevaBoleta()" class="btn-nueva">
-        ➕ Nueva Boleta
-      </button>
-    </div>
-    <div class="pdf-preview">
-      <iframe [src]="pdfUrl | safeUrl" width="100%" height="600px"></iframe>
-    </div>
+<!-- Mostrar boleta PDF -->
+<div *ngIf="boletaGenerada" class="boleta-pdf">
+  <h3>Boleta Generada</h3>
+  <div *ngIf="pdfUrl">
+    <iframe [src]="pdfUrl | safeUrl" width="100%" height="600px" style="border: none;"></iframe>
   </div>
+  <button (click)="nuevaBoleta()" class="btn-nueva">Generar Nueva Boleta</button>
 </div>
