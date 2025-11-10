@@ -32,6 +32,7 @@ export class BoletaComponent implements OnInit {
   private ventasUrl = 'http://127.0.0.1:8000/api/ventas/';
   private clientesUrl = 'http://127.0.0.1:8000/api/clientes/';
 
+<<<<<<< HEAD
   cliente = {
     nombre: '',
     direccion: '',
@@ -40,6 +41,9 @@ export class BoletaComponent implements OnInit {
   };
 
   constructor(private http: HttpClient) {}
+=======
+  constructor(private http: HttpClient) { }
+>>>>>>> be5f72dae2eaae5b1b92644872d900c674e258f3
 
   ngOnInit() {
     this.cargarProductos();
@@ -72,11 +76,14 @@ export class BoletaComponent implements OnInit {
 
     if (seleccionados.length === 0) {
       this.error = 'Selecciona al menos un producto.';
+<<<<<<< HEAD
       return;
     }
 
     if (!this.cliente.nombre.trim()) {
       this.error = 'Completa los datos del cliente.';
+=======
+>>>>>>> be5f72dae2eaae5b1b92644872d900c674e258f3
       return;
     }
 
@@ -84,6 +91,7 @@ export class BoletaComponent implements OnInit {
     this.error = '';
     this.pdfUrl = null;
 
+<<<<<<< HEAD
     // Crear cliente directamente
     const clienteData = { ...this.cliente };
 
@@ -95,6 +103,43 @@ export class BoletaComponent implements OnInit {
         console.error('❌ Error al crear cliente:', err);
         this.error = 'No se pudo crear el cliente.';
         this.loading = false;
+=======
+    const clienteData = {
+      nombre: 'Cliente General',
+      dni: '00000000',
+      direccion: 'N/A',
+      telefono: '',
+      email: ''
+    };
+
+    // Buscar o crear cliente
+    this.http.get<any[]>(`${this.clientesUrl}?dni=00000000`).subscribe({
+      next: (clientes) => {
+        const clienteId = clientes.length > 0 ? clientes[0].id : null;
+
+        if (clienteId) {
+          this.crearVentaConCliente(clienteId, seleccionados);
+        } else {
+          this.http.post<any>(this.clientesUrl, clienteData).subscribe({
+            next: (cliente) => this.crearVentaConCliente(cliente.id, seleccionados),
+            error: (err) => {
+              console.error('❌ Error al crear cliente:', err);
+              this.error = 'No se pudo crear el cliente.';
+              this.loading = false;
+            }
+          });
+        }
+      },
+      error: () => {
+        this.http.post<any>(this.clientesUrl, clienteData).subscribe({
+          next: (cliente) => this.crearVentaConCliente(cliente.id, seleccionados),
+          error: (err) => {
+            console.error('❌ Error al crear cliente:', err);
+            this.error = 'No se pudo crear el cliente.';
+            this.loading = false;
+          }
+        });
+>>>>>>> be5f72dae2eaae5b1b92644872d900c674e258f3
       }
     });
   }
@@ -127,7 +172,10 @@ export class BoletaComponent implements OnInit {
             a.download = `boleta_${venta.id}.pdf`;
             a.click();
 
+<<<<<<< HEAD
             // ✅ Mostrar el PDF en pantalla
+=======
+>>>>>>> be5f72dae2eaae5b1b92644872d900c674e258f3
             this.pdfUrl = blobUrl;
             this.boletaGenerada = true;
             this.loading = false;
@@ -135,7 +183,12 @@ export class BoletaComponent implements OnInit {
             // ✅ Liberar memoria después de un tiempo
             setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
 
+<<<<<<< HEAD
             // 🔹 Actualizar stock de productos vendidos
+=======
+
+            // 🔹 Actualizar stock de los productos vendidos
+>>>>>>> be5f72dae2eaae5b1b92644872d900c674e258f3
             seleccionados.forEach(p => {
               const nuevoStock = Math.max(p.stock - (p.cantidad || 0), 0);
               this.http.patch(`${this.productosUrl}${p.id}/`, { stock: nuevoStock }).subscribe();

@@ -72,6 +72,12 @@ class ClienteRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
 
+import requests
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework import status
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def consultar_dni(request):
@@ -81,12 +87,14 @@ def consultar_dni(request):
 
     url = 'https://api.decolecta.com/v1/reniec/dni'
     headers = {
-        'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer sk_11032.jH1WyieRstSSReDo3sIsNQskY7DUCjse'
     }
-    
+
     try:
         response = requests.get(url, params={'numero': dni}, headers=headers)
+        if response.status_code == 401:
+            return Response({'error': 'Token inválido o expirado'}, status=401)
         response.raise_for_status()
         return Response(response.json())
     except requests.RequestException as e:
@@ -94,6 +102,7 @@ def consultar_dni(request):
             {'error': f'Error consultando RENIEC: {str(e)}'}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
 
 
 # ==============================
