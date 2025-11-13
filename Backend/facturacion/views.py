@@ -88,7 +88,7 @@ def consultar_dni(request):
     url = 'https://api.decolecta.com/v1/reniec/dni'
     headers = {
         'Accept': 'application/json',
-        'Authorization': 'Bearer sk_11032.jH1WyieRstSSReDo3sIsNQskY7DUCjse'
+        'Authorization': 'Bearer sk_11545.eFA0xfGr0ibPrFWZ602Fq7dsARUb4pfR'
     }
 
     try:
